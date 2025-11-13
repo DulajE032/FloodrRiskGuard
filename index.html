@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flood Risk Detection</title>
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <link rel="stylesheet" href="assets/css/style.css">
+<link rel="icon" href="assets/images/icon-2.png" type="/image">
+</head>
+
+<body>
+
+    <main class="main-container">
+
+        <!-- Logged Out View -->
+        <div id="hero-view">
+            <header class="header">
+                <div class="logo">FloodGuard</div>
+                <nav>
+                    <a href="index.html">Home</a>
+                    <a href="about.html">About Us</a>
+                    <a href="contact.html">Contact</a>
+                </nav>
+                <div class="auth-links">
+                    <a href="login.html">Login</a>
+                    <a href="signup.html">Sign Up</a>
+                </div>
+            </header>
+            <section class="hero-section">
+                <div class="hero-content">
+                    <h1>Real-Time Flood Risk Monitoring</h1>
+                    <p>Stay ahead of the flood with accurate, up-to-the-minute weather and risk analysis.</p>
+                    <div class="hero-actions">
+                        <a href="login.html" class="btn-get-started rainbow">
+                            <span class="rainbow-inner-btn">Get Started</span>
+                        </a>
+                        <button id="telegram-info-btn" class="btn-telegram">
+                            Connect via Telegram
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </div>
+
+        <!-- Telegram Instructions Modal -->
+        <div id="telegram-modal" class="modal-overlay hidden">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h3>How to Connect Your Telegram</h3>
+                    <button id="modal-close-btn">&times;</button>
+                </div>
+                <div class="modal-body">
+                    <p>To receive flood risk alerts, you need to connect your account to our Telegram bot.</p>
+                    <ol>
+                        <li><strong>Open Telegram and start a chat with our bot.</strong>
+                            <br>
+                            <a href="https://t.me/FloodRisk_bot" target="_blank" rel="noopener" class="btn-telegram-link">Click here to open the bot</a>
+                        </li>
+                        <li><strong>Send the `/risk (you want city name)` command to the bot.</strong>
+                            <br>
+                            The bot will welcome you.
+                        </li>
+                       
+                        <li><strong>Add your Chat ID during signup.</strong>
+                            <br>
+                            When you create your FloodGuard account, paste this Chat ID into the designated field.
+                        </li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+
+        <!-- Logged In View -->
+        <div id="map-view" style="display: none;">
+            <div id="map"></div>
+            <div id="dashboard">
+                <div class="dashboard-header">
+                    <h3>Location Details</h3>
+                    <button id="theme-toggle">Toggle Theme</button>
+                    <button id="logout-btn">Logout</button>
+                </div>
+                <div class="info-item">
+                    <h4>Location:</h4>
+                    <p id="location-info">Click on the map</p>
+                </div>
+                <div class="info-item">
+                    <h4>Temperature:</h4>
+                    <p id="temp-info">--</p>
+                </div>
+                <div class="info-item">
+                    <h4>Humidity:</h4>
+                    <p id="humidity-info">--</p>
+                </div>
+                <div class="info-item">
+                    <h4>Precipitation:</h4>
+                    <p id="precipitation-info">--</p>
+                </div>
+                <div class="info-item flood-risk">
+                    <h4>Flood Risk:</h4>
+                    <p id="flood-risk-info">--</p>
+                </div>
+            </div>
+
+            <!-- AI Assistant Panel -->
+            <div id="ai-assistant" class="hidden">
+                <div class="ai-header" id="ai-header-drag">
+                    <img src="assets/images/agent.png" alt="AI Agent" class="ai-icon">
+                    <h5>AI Flood Predictor</h5>
+                    <button id="ai-close-btn">&times;</button>
+                </div>
+                <div class="ai-body">
+                    <p>Select a location on the map and click below to run a predictive analysis for the next 48 hours.</p>
+                    <button id="predict-btn">Predict Flood Risk</button>
+                </div>
+                <div id="ai-result" class="hidden">
+                    <h6>Prediction Result:</h6>
+                    <p id="prediction-output"></p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+   
+
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script src="https://unpkg.com/leaflet.heat@0.2.0/dist/leaflet-heat.js"></script>
+    <script src="assets/js/script.js"></script>
+</body>
+
+</html>
