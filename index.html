@@ -3,11 +3,12 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Flood Risk Detection</title>
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
     <link rel="stylesheet" href="assets/css/style.css">
-<link rel="icon" href="assets/images/icon-2.png" type="/image">
+    <link rel="icon" href="assets/images/icon-2.png" type="/image">
+    <script src="https://unpkg.com/@tailwindcss/browser@4"></script>
 </head>
 
 <body>
@@ -18,27 +19,44 @@
         <div id="hero-view">
             <header class="header">
                 <div class="logo">FloodGuard</div>
-                <nav>
+                <nav class="main-nav">
                     <a href="index.html">Home</a>
                     <a href="about.html">About Us</a>
                     <a href="contact.html">Contact</a>
                 </nav>
                 <div class="auth-links">
-                    <a href="login.html">Login</a>
-                    <a href="signup.html">Sign Up</a>
+                    <a href="login.html" class="auth-link">Login</a>
+                    <a href="signup.html" class="auth-link-special">Sign Up</a>
                 </div>
+                <button class="hamburger-menu" id="hamburger-menu" aria-label="Open navigation menu">
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </button>
             </header>
+            <div class="mobile-nav" id="mobile-nav">
+                <a href="index.html">Home</a>
+                <a href="about.html">About Us</a>
+                <a href="contact.html">Contact</a>
+                <a href="login.html">Login</a>
+                <a href="signup.html">Sign Up</a>
+            </div>
             <section class="hero-section">
                 <div class="hero-content">
                     <h1>Real-Time Flood Risk Monitoring</h1>
                     <p>Stay ahead of the flood with accurate, up-to-the-minute weather and risk analysis.</p>
                     <div class="hero-actions">
-                        <a href="login.html" class="btn-get-started rainbow">
-                            <span class="rainbow-inner-btn">Get Started</span>
-                        </a>
-                        <button id="telegram-info-btn" class="btn-telegram">
-                            Connect via Telegram
-                        </button>
+                        <!-- "Get Started" Button with new structure -->
+                        <div class="rainbow">
+                            <a href="login.html" class="rainbow-inner-btn">Get Started</a>
+                        </div>
+
+                        <!-- "Connect via Telegram" Button with new structure -->
+                        <div class="rainbow">
+                            <button id="telegram-info-btn" class="rainbow-inner-btn">
+                                Connect via Telegram
+                            </button>
+                        </div>
                     </div>
                 </div>
             </section>
@@ -86,6 +104,14 @@
                     <p id="location-info">Click on the map</p>
                 </div>
                 <div class="info-item">
+                    <h4>Country:</h4>
+                    <p id="country-name">--</p>
+                </div>
+                <div class="info-item">
+                    <h4>Area/Location:</h4>
+                    <p id="area-name">--</p>
+                </div>
+                <div class="info-item">
                     <h4>Temperature:</h4>
                     <p id="temp-info">--</p>
                 </div>
@@ -106,9 +132,14 @@
             <!-- AI Assistant Panel -->
             <div id="ai-assistant" class="hidden">
                 <div class="ai-header" id="ai-header-drag">
-                    <img src="assets/images/agent.png" alt="AI Agent" class="ai-icon">
-                    <h5>AI Flood Predictor</h5>
-                    <button id="ai-close-btn">&times;</button>
+                    <div class="ai-header-left">
+                        <img src="assets/images/agent.png" alt="AI Agent" class="ai-icon">
+                        <h5>AI Flood Predictor</h5>
+                    </div>
+                    <div class="ai-header-right">
+                        <button id="ai-minimize-btn">-</button>
+                        <button id="ai-close-btn">&times;</button>
+                    </div>
                 </div>
                 <div class="ai-body">
                     <p>Select a location on the map and click below to run a predictive analysis for the next 48 hours.</p>

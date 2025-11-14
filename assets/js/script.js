@@ -7,6 +7,8 @@ document.addEventListener('DOMContentLoaded', () => {
     const heroView = document.getElementById('hero-view');
     const mapView = document.getElementById('map-view');
     const locationInfo = document.getElementById('location-info');
+    const countryName = document.getElementById('country-name');
+    const areaName = document.getElementById('area-name');
     const tempInfo = document.getElementById('temp-info');
     const humidityInfo = document.getElementById('humidity-info');
     const precipitationInfo = document.getElementById('precipitation-info');
@@ -15,18 +17,36 @@ document.addEventListener('DOMContentLoaded', () => {
     const logoutBtn = document.getElementById('logout-btn');
     const aiAssistant = document.getElementById('ai-assistant');
     const aiCloseBtn = document.getElementById('ai-close-btn');
+    const aiMinimizeBtn = document.getElementById('ai-minimize-btn');
     const predictBtn = document.getElementById('predict-btn');
     const aiResult = document.getElementById('ai-result');
     const predictionOutput = document.getElementById('prediction-output');
     const telegramInfoBtn = document.getElementById('telegram-info-btn');
     const telegramModal = document.getElementById('telegram-modal');
-    const modalCloseBtn = document.getElementById('modal-close-btn');
+    const hamburgerMenu = document.getElementById('hamburger-menu');
+    const mobileNav = document.getElementById('mobile-nav');
 
     let currentUser = null;
     let map = null;
     let marker = null;
     let lastClickedLatLng = null;
     let heatLayer = null;
+
+    // --- HEADER & NAV LOGIC ---
+    const header = document.querySelector('.header');
+    window.addEventListener('scroll', () => {
+        if (window.scrollY > 50) {
+            header.classList.add('scrolled');
+        } else {
+            header.classList.remove('scrolled');
+        }
+    });
+
+    if (hamburgerMenu) {
+        hamburgerMenu.addEventListener('click', () => {
+            mobileNav.classList.toggle('open');
+        });
+    }
 
     // --- AUTHENTICATION CHECK ---
     const userData = sessionStorage.getItem('loggedInUser');
@@ -58,10 +78,27 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }
     if (aiCloseBtn) {
-        aiCloseBtn.addEventListener('click', () => {
+        aiCloseBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            aiAssistant.classList.add('hidden');
             aiAssistant.classList.remove('visible');
         });
     }
+
+    if (aiMinimizeBtn) {
+        aiMinimizeBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            aiAssistant.classList.toggle('minimized');
+        });
+    }
+
+    // Click on the minimized circle to expand it
+    aiAssistant.addEventListener('click', () => {
+        if (aiAssistant.classList.contains('minimized')) {
+            aiAssistant.classList.remove('minimized');
+        }
+    });
+
     if (predictBtn) {
         predictBtn.addEventListener('click', runAIPrediction);
         predictBtn.disabled = true; // Disabled until a location is clicked
@@ -196,47 +233,69 @@ document.addEventListener('DOMContentLoaded', () => {
 
 
     // --- Draggable Panel Logic ---
-    function makeDraggable(element) {
-        let pos1 = 0, pos2 = 0, pos3 = 0, pos4 = 0;
-        const dragHeader = document.getElementById("ai-header-drag");
+    function makeDraggable(el) {
+        const header = el.querySelector('.ai-header');
+        if (!header) return; // Only drag by the header
 
-        if (dragHeader) {
-            // if present, the header is where you move the DIV from:
-            dragHeader.onmousedown = dragMouseDown;
-        } else {
-            // otherwise, move the DIV from anywhere inside the DIV:
-            element.onmousedown = dragMouseDown;
+        let isDown = false;
+        let offset = [0, 0];
+
+        // Ensure the element is positioned absolutely
+        el.style.position = 'absolute';
+
+        // Center the element initially if no position is set
+        if (!el.style.left && !el.style.top) {
+            el.style.left = `${(window.innerWidth - el.offsetWidth) / 2}px`;
+            el.style.top = '20px'; // Start near the top
         }
 
-        function dragMouseDown(e) {
-            e = e || window.event;
-            e.preventDefault();
-            // get the mouse cursor position at startup:
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            document.onmouseup = closeDragElement;
-            // call a function whenever the cursor moves:
-            document.onmousemove = elementDrag;
+
+        function onStart(e) {
+            isDown = true;
+            const p = e.touches ? e.touches[0] : e;
+            offset = [
+                el.offsetLeft - p.clientX,
+                el.offsetTop - p.clientY
+            ];
+            header.style.cursor = 'grabbing';
+            // Prevent text selection while dragging
+            document.body.style.userSelect = 'none';
         }
 
-        function elementDrag(e) {
-            e = e || window.event;
-            e.preventDefault();
-            // calculate the new cursor position:
-            pos1 = pos3 - e.clientX;
-            pos2 = pos4 - e.clientY;
-            pos3 = e.clientX;
-            pos4 = e.clientY;
-            // set the element's new position:
-            element.style.top = (element.offsetTop - pos2) + "px";
-            element.style.left = (element.offsetLeft - pos1) + "px";
+        function onEnd() {
+            isDown = false;
+            header.style.cursor = 'grab';
+            document.body.style.userSelect = '';
         }
 
-        function closeDragElement() {
-            // stop moving when mouse button is released:
-            document.onmouseup = null;
-            document.onmousemove = null;
+        function onMove(e) {
+            if (!isDown) return;
+            e.preventDefault(); // Prevent scrolling on touch devices
+            const p = e.touches ? e.touches[0] : e;
+
+            let newX = p.clientX + offset[0];
+            let newY = p.clientY + offset[1];
+
+            // Constrain movement within the viewport
+            const maxX = window.innerWidth - el.offsetWidth;
+            const maxY = window.innerHeight - el.offsetHeight;
+
+            newX = Math.max(0, Math.min(newX, maxX));
+            newY = Math.max(0, Math.min(newY, maxY));
+
+            el.style.left = `${newX}px`;
+            el.style.top = `${newY}px`;
+            el.style.transform = ''; // Clear transform to use top/left
         }
+
+        header.style.cursor = 'grab';
+        header.addEventListener('mousedown', onStart);
+        document.addEventListener('mouseup', onEnd);
+        document.addEventListener('mousemove', onMove);
+
+        header.addEventListener('touchstart', onStart, { passive: false });
+        document.addEventListener('touchend', onEnd);
+        document.addEventListener('touchmove', onMove, { passive: false });
     }
 
 
@@ -334,8 +393,12 @@ document.addEventListener('DOMContentLoaded', () => {
             floodRiskInfo.style.color = risk.color;
             weather.risk = risk;
 
+            // Fetch geographic data for the dashboard
+            fetchGeographicData(lat, lon, weather, true);
+
             if (currentUser && currentUser.telegramChatId) {
-                fetchGeographicData(lat, lon, weather);
+                // This will send the notification
+                fetchGeographicData(lat, lon, weather, false);
             }
         } catch (error) {
             console.error("Error fetching weather data:", error);
@@ -343,7 +406,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    async function fetchGeographicData(lat, lon, weatherData) {
+    async function fetchGeographicData(lat, lon, weatherData, updateDashboard) {
         const url = `https://api.opencagedata.com/geocode/v1/json?q=${lat}+${lon}&key=${OC_API_KEY}&no_annotations=1`;
         try {
             const response = await fetch(url);
@@ -357,10 +420,17 @@ document.addEventListener('DOMContentLoaded', () => {
                 place: components.village || components.town || components.city || 'N/A'
             };
 
-            sendTelegramNotification(weatherData, geo);
+            if (updateDashboard) {
+                countryName.textContent = geo.country;
+                areaName.textContent = `${geo.place}, ${geo.district}`;
+            } else {
+                sendTelegramNotification(weatherData, geo);
+            }
         } catch (error) {
             console.error("Error fetching geographic data:", error);
-            sendTelegramNotification(weatherData, { country: 'N/A', district: 'N/A', place: 'N/A' });
+            if (!updateDashboard) {
+                sendTelegramNotification(weatherData, { country: 'N/A', district: 'N/A', place: 'N/A' });
+            }
         }
     }
 
@@ -413,4 +483,10 @@ document.addEventListener('DOMContentLoaded', () => {
         if (score >= 3) return { level: 'Moderate Risk', color: '#f39c12' };
         return { level: 'Low Risk', color: '#2ecc71' };
     }
+
+    window.addEventListener('resize', () => {
+      if (map) {
+        setTimeout(() => map.invalidateSize(), 200);
+      }
+    });
 });
