@@ -1,4 +1,4 @@
-# 🌊 FloodRiskGuard
+# 🌊 FloodRiskGuard (html,css,js base web application)
 
 FloodRiskGuard is a smart application designed to **assess, visualize, and monitor flood risk** using environmental, geographic, and historical data.  
 The system helps **communities, planners, and authorities** make informed decisions to reduce flood damage and improve preparedness.
